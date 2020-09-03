@@ -1,7 +1,7 @@
 package practico1.entity;
 
 
-public class Person {
+public class Cliente {
 	
 	
 	private int id;
@@ -11,12 +11,12 @@ public class Person {
 	private int age;
 	
 	
-	public Person() {
+	public Cliente() {
 		super();
 	}
 
 
-	public Person(int id, String name, int age) {
+	public Cliente(int id, String name, int age) {
 		super();
 		this.id = id;
 		this.name = name;

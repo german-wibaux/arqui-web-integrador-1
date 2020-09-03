@@ -1,23 +1,55 @@
 package practico1.client;
-
+import java.io.FileReader;
 import java.sql.Connection;
-import java.sql.SQLException;
 
-import practico1.dao.DAOFactory;
-import practico1.dao.MySQLPersonDAO;
-import practico1.dao.MySqlJDBCDAOFactory;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+
+
+import practico1.dao.factory.DAOFactory;
+import practico1.dao.interf.ClienteDAO;
+import practico1.dao.interf.FacturaDAO;
+import practico1.dao.interf.ProductoDAO;
+
+
+
+
 
 public class serviceLayer {
 
 	
 	public static void main(String[] args) throws Throwable {
 	
-	Object mysqlFactory = DAOFactory.getDAOFactory(1);
-	Connection conn = ((MySqlJDBCDAOFactory) mysqlFactory).getConnection();
+	DAOFactory mysqlFactory = DAOFactory.getDAOFactory(1);
+	ClienteDAO cliente = mysqlFactory.getClienteDAO();
+	FacturaDAO factura = mysqlFactory.getFacturaDAO();
+	ProductoDAO producto = mysqlFactory.getProductoDAO();
 	
-	MySQLPersonDAO persDAO = (MySQLPersonDAO) ((MySqlJDBCDAOFactory) mysqlFactory).getPersonDAO();
+	CSVParser parser = CSVFormat.DEFAULT.withHeader().parse(new FileReader("/home/yermans/Documentos/clientes.csv"));
+	Connection connection = mysqlFactory.getConnection();
+	for(CSVRecord row: parser) {
+		cliente.insertarCliente(connection, Integer.parseInt(row.get("idCliente")) , row.get("nombre"), row.get("email"));
+	}
 	
-	persDAO.insertPerson(conn, 6, "El DAO", 15);
+	CSVParser parser1 = CSVFormat.DEFAULT.withHeader().parse(new FileReader("/home/yermans/Documentos/facturas.csv"));
+	for(CSVRecord row: parser1) {
+		factura.insertarFactura(connection, Integer.parseInt(row.get("idFactura")) , Integer.parseInt(row.get("idCliente")));
+	}
+	
+	CSVParser parser2 = CSVFormat.DEFAULT.withHeader().parse(new FileReader("/home/yermans/Documentos/productos.csv"));
+	for(CSVRecord row: parser2) {
+		producto.insertarProducto(connection, Integer.parseInt(row.get("idProducto")), row.get("nombre") , Integer.parseInt(row.get("valor")) );
+	}
+	
+	CSVParser parser3 = CSVFormat.DEFAULT.withHeader().parse(new FileReader("/home/yermans/Documentos/facturas-productos.csv"));
+	for(CSVRecord row: parser3) {
+		factura.insertarProducto(connection, Integer.parseInt(row.get("idFactura")), Integer.parseInt(row.get("idProducto")) , Integer.parseInt(row.get("cantidad")) );
+	}
+	connection.close();
+	
+	
+	
 	
 	
 	}

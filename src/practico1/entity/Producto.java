@@ -1,4 +1,4 @@
-package primer.practico.entity;
+package practico1.entity;
 
 public class Producto {
 
